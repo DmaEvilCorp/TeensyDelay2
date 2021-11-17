@@ -7,3 +7,4 @@ Second version of the TeensyDelay.
 - 2 delay level.
 - 1 feedback volume.
 
+ ![Audio Tool Graph](https://raw.githubusercontent.com/DmaEvilCorp/TeensyDelay2/main/AudioTool.PNG) 
