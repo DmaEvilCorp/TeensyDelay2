@@ -6,25 +6,30 @@
 #include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
-AudioInputI2S            i2s1;           //xy=256,114
-AudioEffectDelay         Delay1;         //xy=414,345
-AudioMixer4              InputMixer;         //xy=418,126
-AudioMixer4              Delay1Feedback;         //xy=445,222
-AudioMixer4              OutputMixer;         //xy=592,146
-AudioMixer4              Delay1Mixer;         //xy=616,317
-AudioOutputI2S           i2s2;           //xy=754,152
+AudioInputI2S            i2s1;           //xy=254,80
+AudioMixer4              InputMixer; //xy=403,90
+AudioEffectDelay         Delay1;         //xy=415,336
+AudioMixer4              Delay1Feedback;      //xy=421,177
+AudioMixer4              Delay2Mixer; //xy=435,437
+AudioEffectDelay         Delay2; //xy=584,406
+AudioMixer4              Delay1Mixer; //xy=757,308
+AudioMixer4              OutputMixer;        //xy=801,97
+AudioOutputI2S           i2s2;           //xy=960,100
 AudioConnection          patchCord1(i2s1, 0, InputMixer, 0);
 AudioConnection          patchCord2(i2s1, 1, InputMixer, 1);
-AudioConnection          patchCord3(Delay1, 0, Delay1Mixer, 0);
-AudioConnection          patchCord4(Delay1, 1, Delay1Mixer, 1);
-AudioConnection          patchCord5(InputMixer, 0, OutputMixer, 0);
-AudioConnection          patchCord6(InputMixer, 0, Delay1Feedback, 0);
+AudioConnection          patchCord3(InputMixer, 0, OutputMixer, 0);
+AudioConnection          patchCord4(InputMixer, 0, Delay1Feedback, 0);
+AudioConnection          patchCord5(Delay1, 0, Delay1Mixer, 0);
+AudioConnection          patchCord6(Delay1, 0, Delay2Mixer, 0);
 AudioConnection          patchCord7(Delay1Feedback, Delay1);
-AudioConnection          patchCord8(OutputMixer, 0, i2s2, 0);
-AudioConnection          patchCord9(OutputMixer, 0, i2s2, 1);
-AudioConnection          patchCord10(Delay1Mixer, 0, Delay1Feedback, 1);
-AudioConnection          patchCord11(Delay1Mixer, 0, OutputMixer, 1);
-AudioControlSGTL5000     sgtl5000_1;     //xy=249,73
+AudioConnection          patchCord8(Delay1Feedback, 0, Delay2Mixer, 1);
+AudioConnection          patchCord9(Delay2Mixer, Delay2);
+AudioConnection          patchCord10(Delay2, 0, Delay1Mixer, 1);
+AudioConnection          patchCord11(Delay1Mixer, 0, Delay1Feedback, 1);
+AudioConnection          patchCord12(Delay1Mixer, 0, OutputMixer, 1);
+AudioConnection          patchCord13(OutputMixer, 0, i2s2, 0);
+AudioConnection          patchCord14(OutputMixer, 0, i2s2, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=264,39
 // GUItool: end automatically generated code
 
 
@@ -61,9 +66,14 @@ void setup() {
   Delay1Feedback.gain(3, 0); //Not used
 
   Delay1Mixer.gain(0, 0); //Delay 1 level
-  Delay1Mixer.gain(1, 0); //Not used
+  Delay1Mixer.gain(1, 0); //Delay 2 level
   Delay1Mixer.gain(2, 0); //Not used
   Delay1Mixer.gain(3, 0); //Not used
+
+  Delay2Mixer.gain(0, 1); //Delay 1 level
+  Delay2Mixer.gain(1, 1); //Delay 2 level
+  Delay2Mixer.gain(2, 0); //Not used
+  Delay2Mixer.gain(3, 0); //Not used
 
   OutputMixer.gain(0, 1); //Dry level
   OutputMixer.gain(1, 1); //Delay 1+2 level
@@ -71,13 +81,22 @@ void setup() {
   OutputMixer.gain(3, 0); //Not used
 
   Delay1.delay(0, 10);
-  Delay1.delay(1, 10);
+  Delay1.disable(1); //Not used
   Delay1.disable(2); //Not used
   Delay1.disable(3); //Not used
   Delay1.disable(4); //Not used
   Delay1.disable(5); //Not used
   Delay1.disable(6); //Not used
   Delay1.disable(7); //Not used
+
+  Delay2.delay(0, 10);
+  Delay2.disable(1); //Not used
+  Delay2.disable(2); //Not used
+  Delay2.disable(3); //Not used
+  Delay2.disable(4); //Not used
+  Delay2.disable(5); //Not used
+  Delay2.disable(6); //Not used
+  Delay2.disable(7); //Not used
 
   delay(100);
 
@@ -113,11 +132,11 @@ void loop() {
   Delay1Mixer.gain(0, Delay1Level_Pot);
   Delay1Mixer.gain(1, Delay2Level_Pot);
   Delay1Feedback.gain(1, Delay1Feedback_Pot);
-  //  Serial.println("----");
-  //  Serial.println(Delay1Level_Pot);
-  //  Serial.println(Delay2Level_Pot);
-  //  Serial.println(Delay1Feedback_Pot);
-  //  Serial.println("----");
+    Serial.println("----");
+    Serial.println(Delay1Level_Pot);
+    Serial.println(Delay2Level_Pot);
+    Serial.println(Delay1Feedback_Pot);
+    Serial.println("----");
   //Set time for each delay
   float Delay1time  = map((float)knob4, 0, 1023, 50, 1000);
   Delay1time = round100(Delay1time);
@@ -134,12 +153,12 @@ void loop() {
   if (button33.read() == LOW) {
     //Normal time
     Delay1.delay(0, Delay1time);
-    Delay1.delay(1, Delay2time);
+    Delay2.delay(0, Delay2time);
   }
   else {
     //Double time
     Delay1.delay(0, Delay1time * 2);
-    Delay1.delay(1, Delay2time * 2);
+    Delay2.delay(0, Delay2time * 2);
   }
 
 
